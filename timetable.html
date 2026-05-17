@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>时刻表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', 'Roboto', 'Inter', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #e9f0f5 0%, #d9e2ec 100%);
+            min-height: 100vh;
+            padding: 2rem 1.5rem;
+        }
+
+        /* 主容器卡片 */
+        .dashboard {
+            max-width: 860px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(0px);
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(218, 181, 181, 0.2), 0 2px 5px rgba(0, 0, 0, 0.02);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        /* 头部 */
+        .hero {
+            background: linear-gradient(135deg, #0b2b3f 0%, #1c4e6f 100%);
+            padding: 1.8rem 2rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            color: rgb(255, 255, 255);
+            font-size: 1.9rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .hero h1::before {
+            content: "🚌";
+            font-size: 2rem;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .hero p {
+            color: #f2ff40;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+
+        /* 菜单按钮组 现代风格 */
+        .menu-bar {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1.5rem 2rem 0.8rem 2rem;
+            background: white;
+            border-bottom: 1px solid #dfff52;
+            flex-wrap: wrap;
+        }
+
+        .menu-btn {
+            background: transparent;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 0.6rem 1.6rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            transition: all 0.25s;
+            color: #1e7cce;
+            background: #ffffff;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+        }
+
+        .menu-btn i {
+            margin-right: 8px;
+            font-style: normal;
+            display: inline-block;
+        }
+
+        .menu-btn:hover {
+            background: #7aff6d;
+            transform: translateY(-2px);
+        }
+
+        .menu-btn.active {
+            background: #1e6f9f;
+            color: rgb(26, 255, 57);
+            box-shadow: 0 6px 12px -8px #ff0f0f60;
+        }
+
+        /* 表单卡片内容 */
+        .form-panel {
+            padding: 2rem 2rem 2.2rem 2rem;
+            background: rgb(255, 255, 255);
+            transition: all 0.2s;
+        }
+
+        .form-card {
+            animation: fadeSlideUp 0.28s ease-out;
+        }
+
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #1e3a4b;
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+        }
+
+        label .optional {
+            font-weight: normal;
+            color: #7c8b9c;
+            font-size: 0.7rem;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1.5px solid #e2edf2;
+            border-radius: 1.2rem;
+            font-size: 0.9rem;
+            background: #fefefe;
+            transition: all 0.2s;
+            outline: none;
+            color: #0f2c38;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #1dff3b;
+            box-shadow: 0 0 0 3px rgba(44, 156, 212, 0.2);
+            background: #fff;
+        }
+
+        textarea {
+            border-radius: 1.2rem;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            resize: vertical;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(100deg, #105db5, #136b8a);
+            border: none;
+            color: white;
+            padding: 0.7rem 1.8rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(100deg, #17ff3a, #0eff56);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 16px -8px #10ff1870;
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            border: 1px solid #248cdc;
+            color: #ff0e0e;
+            padding: 0.7rem 1.8rem;
+            border-radius: 2rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e9f0;
+            transform: translateY(-1px);
+        }
+
+        .result-card {
+            margin-top: 2rem;
+            background: #f0f9fe;
+            border-radius: 1.2rem;
+            padding: 1.2rem 1.4rem;
+            border-left: 6px solid #2c9cd4;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: #144d64;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            max-height: 380px;
+            overflow-y: auto;
+        }
+
+        .result-card.error {
+            border-left-color: #e07c4c;
+            background: #fff6f0;
+            color: #b45a2e;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        hr {
+            margin: 8px 0 14px;
+            border: none;
+            border-top: 1px solid #e2edf2;
+        }
+
+        .badge {
+            background: #eef2ff;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+            color: #1a5a79;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background: #f8fafc;
+            color: #6b8ba0;
+            font-size: 0.7rem;
+            border-top: 1px solid #ecf3f8;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem;
+            }
+            .grid-2col {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+            .menu-bar {
+                gap: 0.6rem;
+                padding: 1rem 1rem 0.2rem;
+            }
+            .menu-btn {
+                padding: 0.4rem 1rem;
+                font-size: 0.85rem;
+            }
+            .form-panel {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+<div class="dashboard">
+    
+    <div class="hero">
+        <h1>时刻表查询系统</h1>
+        <p>Beta测试版</p>
+    </div>
+    
+    <div class="menu-bar">
+        <button class="menu-btn" data-menu="add">📋 添加时刻表</button>
+        <button class="menu-btn" data-menu="search">🔍 查询时刻表</button>
+        <button class="menu-btn" data-menu="delete">🗑️ 删除时刻表</button>
+        <a href="index.html" class="menu-btn">🏠 返回首页</a>
+
+    </div>
+    <div class="form-panel">
+        <!-- 添加模块 -->
+        <div id="add-form" class="form-card hidden">
+            <div class="grid-2col">
+                <div class="form-group">
+                    <label>📍 城市</label>
+                    <input type="text" id="city" placeholder="例: 北京市" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>🚌 线路</label>
+                    <input type="text" id="way" placeholder="例: 快速直达专线1路 / 52路">
+                </div>
+                <div class="form-group">
+                    <label>⛳ 起点站</label>
+                    <input type="text" id="start" placeholder="主站名称">
+                </div>
+                <div class="form-group">
+                    <label>🏁 终点站</label>
+                    <input type="text" id="end" placeholder="副站名称">
+                </div>
+                <div class="form-group full-width">
+                    <label>📌 备注 <span class="optional">(单日/双日/工作日/节假日等)</span></label>
+                    <input type="text" id="bc" placeholder="例如：工作日运行，周末除外，若无则留空">
+                </div>
+                <div class="form-group">
+                    <label>⬆️ 上行时刻表</label>
+                    <input type="text" id="time1" placeholder="例: 0600 0630 0700">
+                </div>
+                <div class="form-group">
+                    <label>⬇️ 下行时刻表</label>
+                    <input type="text" id="time2" placeholder="例: 0620 0650 0730">
+                </div>
+                <div class="form-group full-width">
+                    <label>📅 执行时间 / 有效期</label>
+                    <input type="text" id="exec-time" placeholder="例: 2025.01.01">
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn-primary" id="submitAddBtn">✨ 添加上传</button>
+                <button class="btn-secondary" id="resetAddBtn">🗘 清空表单</button>
+            </div>
+            <div id="add-result" class="result-card hidden"></div>
+        </div>
+
+        <!-- 查询模块 -->
+        <div id="search-form" class="form-card hidden">
+            <div class="grid-2col">
+                <div class="form-group">
+                    <label>🏙️ 城市 <span style="color:#e07c4c;">*</span></label>
+                    <input type="text" id="search-city" placeholder="城市名">
+                </div>
+                <div class="form-group">
+                    <label>🚦 线路 <span style="color:#e07c4c;">*</span></label>
+                    <input type="text" id="search-way" placeholder="例: 52路">
+                </div>
+                <div class="form-group full-width">
+                    <label>🆔 时刻表ID (选填)</label>
+                    <input type="text" id="search-id" placeholder="直接输入ID将优先精确查找">
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn-primary" id="submitSearchBtn">🔎 查询时刻表</button>
+                <button class="btn-secondary" id="clearSearchBtn">清除</button>
+            </div>
+            <div id="search-result" class="result-card hidden"></div>
+        </div>
+
+        <!-- 删除模块 -->
+        <div id="delete-form" class="form-card hidden">
+            <div class="form-group">
+                <label>⚠️ 删除记录 (输入时刻表ID)</label>
+                <input type="text" id="delete-id" placeholder="例如: T10001" autocomplete="off">
+            </div>
+            <div class="btn-group">
+                <button class="btn-primary" id="submitDeleteBtn">🗑️ 永久删除</button>
+            </div>
+            <div id="delete-result" class="result-card hidden"></div>
+        </div>
+    </div>
+    <footer>🚍 基于本地存储 · 数据可靠留存 | 时刻表助手</footer>
+</div>
+
+<script>
+    // ---------- 核心 TimetableManager (封装 localStorage + 数据结构) ----------
+    const STORAGE_KEY = "smart_bus_timetable_db";
+    
+    // 辅助生成短ID (时间戳 + 随机数，保证可读)
+    function generateId() {
+        return 'T' + Date.now().toString(36).slice(-6) + Math.random().toString(36).substring(2, 5).toUpperCase();
+    }
+
+    class TimetableManager {
+        // 获取全部记录
+        static getAll() {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return [];
+            try {
+                return JSON.parse(raw);
+            } catch(e) {
+                return [];
+            }
+        }
+
+        // 保存全部
+        static saveAll(data) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        // 添加时刻表
+        static addTimetable({ city, way, start, end, bc, time1, time2, execTime }) {
+            const all = this.getAll();
+            // 简单校验同线路/同城市 (业务建议但非强制，仅提示)
+            const duplicate = all.find(item => item.city === city && item.way === way);
+            if (duplicate) {
+                return { success: false, message: `⚠️ 已存在城市「${city}」线路「${way}」的时刻表，如需更新请先删除旧版。` };
+            }
+            const newId = generateId();
+            const newEntry = {
+                id: newId,
+                city: city.trim(),
+                way: way.trim(),
+                start: start.trim(),
+                end: end.trim(),
+                bc: bc || "",
+                time1: time1.trim(),
+                time2: time2.trim(),
+                execTime: execTime.trim(),
+                createdAt: new Date().toISOString()
+            };
+            all.push(newEntry);
+            this.saveAll(all);
+            return { success: true, message: `✅ 添加成功！时刻表ID: ${newId}`, id: newId };
+        }
+
+        // 根据ID精确查找
+        static searchByID(id) {
+            const all = this.getAll();
+            const target = all.find(item => item.id === id);
+            if (!target) {
+                return { success: false, message: `❌ 未找到ID为 ${id} 的时刻表。` };
+            }
+            const formatted = this._formatSingle(target);
+            return { success: true, data: formatted };
+        }
+
+        // 根据城市+线路查找 (返回完整信息 + 如有多个扩展返回首选, 一般唯一)
+        static searchByName(city, way) {
+            const all = this.getAll();
+            const list = all.filter(item => item.city === city && item.way === way);
+            if (list.length === 0) {
+                return { success: false, message: `❌ 未找到城市「${city}」线路「${way}」的时刻表。` };
+            }
+            if (list.length > 1) {
+                // 理论上我们添加时保证唯一，但若历史多记录，返回第一个并提示
+                const warnMsg = `⚠️ 发现多条匹配记录，展示第一条。总计${list.length}条，建议使用ID精确查询。\n\n`;
+                return { success: true, id: list[0].id, multiple: true, extraMsg: warnMsg, data: list[0] };
+            }
+            return { success: true, id: list[0].id, data: list[0] };
+        }
+
+        // 删除
+        static deleteTimetable(id) {
+            const all = this.getAll();
+            const index = all.findIndex(item => item.id === id);
+            if (index === -1) {
+                return { success: false, message: `❌ 删除失败，时刻表ID「${id}」不存在。` };
+            }
+            const deletedName = all[index].way;
+            all.splice(index, 1);
+            this.saveAll(all);
+            return { success: true, message: `🗑️ 成功删除 ${deletedName} (ID: ${id}) 的时刻表。` };
+        }
+
+        // 展示美化格式
+        static _formatSingle(t) {
+            const bcText = t.bc ? `【${t.bc}】` : '';
+            const upTimes = t.time1 ? t.time1.split(/\s+/).join(' · ') : '无时刻';
+            const downTimes = t.time2 ? t.time2.split(/\s+/).join(' · ') : '无时刻';
+            return `🚏 时刻表详情 (ID: ${t.id})
+━━━━━━━━━━━━━━━━━━━━━━━━━
+📍 城市：${t.city}  |  🚌 线路：${t.way} ${bcText}
+⛳ 起点：${t.start}  →  🏁 终点：${t.end}
+⏰ 上行班次：${upTimes}
+⏰ 下行班次：${downTimes}
+📅 执行区间：${t.execTime || '未注明'}
+🕒 录入时间：${new Date(t.createdAt).toLocaleString()}
+━━━━━━━━━━━━━━━━━━━━━━━━━`;
+        }
+
+        // 额外：用于展示所有匹配的友好提示（当查询多条时）
+        static listAllByCityAndLine(city, way) {
+            const all = this.getAll();
+            return all.filter(item => item.city === city && item.way === way);
+        }
+    }
+
+    // 初始化默认示例数据（仅首次加载无数据时）
+    function initSampleData() {
+        const existing = TimetableManager.getAll();
+        if (existing.length === 0) {
+            const sample = {
+                city: "杭州市",
+                way: "武林广场专线",
+                start: "武林广场",
+                end: "灵隐寺",
+                bc: "节假日及周末",
+                time1: "0800 0900 1000 1100",
+                time2: "0845 0945 1045 1145",
+                execTime: "春季/秋季时刻表"
+            };
+            const res = TimetableManager.addTimetable(sample);
+            if (res.success) {
+                console.log("示例数据已植入, ID:", res.id);
+            }
+            // 添加第二条快速示例
+            TimetableManager.addTimetable({
+                city: "北京市",
+                way: "52路",
+                start: "北京西站",
+                end: "平乐园",
+                bc: "工作日高峰",
+                time1: "0600 0630 0700 0730",
+                time2: "0615 0645 0715 0745",
+                execTime: "周一至周五"
+            });
+        }
+    }
+    initSampleData();
+
+    // ---------- UI 交互优化 ----------
+    let currentActive = null;
+    const panels = {
+        add: document.getElementById('add-form'),
+        search: document.getElementById('search-form'),
+        delete: document.getElementById('delete-form')
+    };
+    
+    function setActivePanel(panelName) {
+        Object.keys(panels).forEach(key => {
+            panels[key].classList.add('hidden');
+        });
+        if (panelName && panels[panelName]) {
+            panels[panelName].classList.remove('hidden');
+            currentActive = panelName;
+        }
+        // 更新按钮样式
+        document.querySelectorAll('.menu-btn').forEach(btn => {
+            const menuType = btn.getAttribute('data-menu');
+            if (menuType === panelName) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    }
+
+    // 初始默认显示添加面板
+    setActivePanel('add');
+
+    // 绑定菜单事件
+    document.querySelectorAll('.menu-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const type = btn.getAttribute('data-menu');
+            if (type === 'add') setActivePanel('add');
+            else if (type === 'search') setActivePanel('search');
+            else if (type === 'delete') setActivePanel('delete');
+            // 切换时清理对应结果框
+            document.getElementById('add-result')?.classList.add('hidden');
+            document.getElementById('search-result')?.classList.add('hidden');
+            document.getElementById('delete-result')?.classList.add('hidden');
+        });
+    });
+
+    // 添加逻辑
+    const submitAdd = document.getElementById('submitAddBtn');
+    const resetAddBtn = document.getElementById('resetAddBtn');
+    const addResultDiv = document.getElementById('add-result');
+    
+    function clearAddForm() {
+        document.getElementById('city').value = '';
+        document.getElementById('way').value = '';
+        document.getElementById('start').value = '';
+        document.getElementById('end').value = '';
+        document.getElementById('bc').value = '';
+        document.getElementById('time1').value = '';
+        document.getElementById('time2').value = document.getElementById('exec-time').value = '';
+        addResultDiv.classList.add('hidden');
+    }
+    
+    submitAdd.addEventListener('click', () => {
+        const city = document.getElementById('city').value.trim();
+        const way = document.getElementById('way').value.trim();
+        const start = document.getElementById('start').value.trim();
+        const end = document.getElementById('end').value.trim();
+        const bc = document.getElementById('bc').value.trim();
+        const time1 = document.getElementById('time1').value.trim();
+        const time2 = document.getElementById('time2').value.trim();
+        const execTime = document.getElementById('exec-time').value.trim();
+        
+        if (!city || !way || !start || !end || !time1 || !time2 || !execTime) {
+            addResultDiv.classList.remove('hidden');
+            addResultDiv.classList.add('error');
+            addResultDiv.textContent = '⚠️ 请填写完整字段：城市、线路、起点、终点、上下行时刻、执行时间均不能为空。';
+            return;
+        }
+        const result = TimetableManager.addTimetable({ city, way, start, end, bc, time1, time2, execTime });
+        addResultDiv.classList.remove('hidden');
+        if (result.success) {
+            addResultDiv.classList.remove('error');
+            addResultDiv.innerHTML = `✅ ${result.message}<br>🔖 新时刻表ID: <strong>${result.id}</strong><br>💡 可使用ID快速查询或删除。`;
+            // 清空表单（保留体验）
+            clearAddForm();
+        } else {
+            addResultDiv.classList.add('error');
+            addResultDiv.textContent = result.message;
+        }
+    });
+    
+    resetAddBtn.addEventListener('click', clearAddForm);
+    
+    // 查询逻辑
+    const searchBtn = document.getElementById('submitSearchBtn');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const searchResultDiv = document.getElementById('search-result');
+    
+    function resetSearch() {
+        document.getElementById('search-city').value = '';
+        document.getElementById('search-way').value = '';
+        document.getElementById('search-id').value = '';
+        searchResultDiv.classList.add('hidden');
+    }
+    
+    searchBtn.addEventListener('click', () => {
+        const city = document.getElementById('search-city').value.trim();
+        let way = document.getElementById('search-way').value.trim();
+        const idRaw = document.getElementById('search-id').value.trim();
+        
+        if (!city && !idRaw) {
+            searchResultDiv.classList.remove('hidden');
+            searchResultDiv.classList.add('error');
+            searchResultDiv.textContent = '❓ 请至少填写城市+线路 或 直接输入时刻表ID查询。';
+            return;
+        }
+        searchResultDiv.classList.remove('hidden');
+        // 优先ID查询
+        if (idRaw) {
+            const byId = TimetableManager.searchByID(idRaw);
+            if (byId.success) {
+                searchResultDiv.classList.remove('error');
+                searchResultDiv.innerHTML = `<pre style="font-family: monospace; white-space: pre-wrap;">${byId.data}</pre>`;
+            } else {
+                searchResultDiv.classList.add('error');
+                searchResultDiv.textContent = byId.message;
+            }
+            return;
+        }
+        // 城市+线路查询
+        if (!city || !way) {
+            searchResultDiv.classList.add('error');
+            searchResultDiv.textContent = '城市和线路不能为空（未输入ID时）';
+            return;
+        }
+        if (!way.endsWith("路") && !way.endsWith("线") && !way.includes("专线")) {
+            // 智能补“路”但保留原样提醒，不强制自动加“路”，让用户明确
+            // 但是原逻辑加“路”可能会让没加路的用户找不到，做一个优化：先直接匹配原线路，匹配不到再尝试加“路”
+        }
+        let matched = TimetableManager.searchByName(city, way);
+        if (!matched.success && !way.endsWith("路")) {
+            const tryWithLu = way + "路";
+            matched = TimetableManager.searchByName(city, tryWithLu);
+            if (matched.success) {
+                way = tryWithLu;
+            }
+        }
+        if (matched.success) {
+            const detailResult = TimetableManager.searchByID(matched.id);
+            if (detailResult.success) {
+                let prefixMsg = "";
+                if (matched.multiple) prefixMsg = matched.extraMsg || "";
+                searchResultDiv.classList.remove('error');
+                searchResultDiv.innerHTML = `<pre style="font-family: monospace; white-space: pre-wrap;">${prefixMsg}${detailResult.data}</pre>`;
+            } else {
+                searchResultDiv.classList.add('error');
+                searchResultDiv.textContent = detailResult.message;
+            }
+        } else {
+            searchResultDiv.classList.add('error');
+            searchResultDiv.textContent = matched.message;
+        }
+    });
+    
+    clearSearchBtn.addEventListener('click', resetSearch);
+    
+    // 删除逻辑
+    const deleteBtn = document.getElementById('submitDeleteBtn');
+    const deleteResultDiv = document.getElementById('delete-result');
+    const deleteIdInput = document.getElementById('delete-id');
+    
+    deleteBtn.addEventListener('click', () => {
+        const id = deleteIdInput.value.trim();
+        if (!id) {
+            deleteResultDiv.classList.remove('hidden');
+            deleteResultDiv.classList.add('error');
+            deleteResultDiv.textContent = '⚠️ 请输入需要删除的时刻表ID。';
+            return;
+        }
+        const result = TimetableManager.deleteTimetable(id);
+        deleteResultDiv.classList.remove('hidden');
+        if (result.success) {
+            deleteResultDiv.classList.remove('error');
+            deleteResultDiv.textContent = result.message;
+            deleteIdInput.value = '';
+        } else {
+            deleteResultDiv.classList.add('error');
+            deleteResultDiv.textContent = result.message;
+        }
+    });
+    
+    // 附加UI优化：点击空白清除某些错误提醒 (温和)
+    document.querySelectorAll('input').forEach(inp => {
+        inp.addEventListener('focus', () => {
+            if (currentActive === 'add' && addResultDiv && !addResultDiv.classList.contains('hidden')) {
+                // 不清空内容，只是视觉上不强求，防止烦人
+            }
+        });
+    });
+</script>
+</body>
+</html>
