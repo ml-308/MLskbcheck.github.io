@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>时刻表</title>
+    <link rel="stylesheet" href="timetable.css">
+    <script src="timetable.js"></script>
+</head>
+<body>
+    
+<div class="dashboard">
+    
+    <div class="hero">
+        <h1>时刻表查询系统</h1>
+        <p>Beta测试版</p>
+    </div>
+    
+    <div class="menu-bar">
+        <button class="menu-btn" data-menu="add">添加时刻表</button>
+        <button class="menu-btn" data-menu="search">查询时刻表</button>
+        <button class="menu-btn" data-menu="delete">删除时刻表</button>
+        <button class="menu-btn" data-menu="about">返回主页</button>
+
+    </div>
+    <div class="form-panel">
+        <!-- 添加模块 -->
+        <div id="add-form" class="form-card hidden">
+            <div class="grid-2col">
+                <div class="form-group">
+                    <label>城市</label>
+                    <input type="text" id="city" placeholder="例: 北京市" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>线路</label>
+                    <input type="text" id="way" placeholder="例: 快速直达专线1路 / 52路">
+                </div>
+                <div class="form-group">
+                    <label>起点站</label>
+                    <input type="text" id="start" placeholder="主站名称">
+                </div>
+                <div class="form-group">
+                    <label>终点站</label>
+                    <input type="text" id="end" placeholder="副站名称">
+                </div>
+                <div class="form-group full-width">
+                    <label>备注 <span class="optional">(单日/双日/工作日/节假日等)</span></label>
+                    <input type="text" id="bc" placeholder="例如：工作日运行，周末除外，若无则留空">
+                </div>
+                <div class="form-group">
+                    <label>上行时刻表</label>
+                    <input type="text" id="time1" placeholder="例: 0600 0630 0700">
+                </div>
+                <div class="form-group">
+                    <label>下行时刻表</label>
+                    <input type="text" id="time2" placeholder="例: 0620 0650 0730">
+                </div>
+                <div class="form-group full-width">
+                    <label>执行时间</label>
+                    <input type="text" id="exec-time" placeholder="例: 2025.01.01">
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn-primary" id="submitAddBtn">添加上传</button>
+                <button class="btn-secondary" id="resetAddBtn">清空表单</button>
+            </div>
+            <div id="add-result" class="result-card hidden"></div>
+        </div>
+
+        <!-- 查询模块 -->
+        <div id="search-form" class="form-card hidden">
+            <div class="grid-2col">
+                <div class="form-group">
+                    <label>城市 <span style="color:#e07c4c;">*</span></label>
+                    <input type="text" id="search-city" placeholder="城市名">
+                </div>
+                <div class="form-group">
+                    <label>线路 <span style="color:#e07c4c;">*</span></label>
+                    <input type="text" id="search-way" placeholder="例: 52路">
+                </div>
+                <div class="form-group full-width">
+                    <label>时刻表ID (选填)</label>
+                    <input type="text" id="search-id" placeholder="直接输入ID将优先精确查找">
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn-primary" id="submitSearchBtn">查询时刻表</button>
+                <button class="btn-secondary" id="clearSearchBtn">清除</button>
+            </div>
+            <div id="search-result" class="result-card hidden"></div>
+        </div>
+
+        <!-- 删除模块 -->
+        <div id="delete-form" class="form-card hidden">
+            <div class="form-group">
+                <label>删除记录 (输入时刻表ID)</label>
+                <input type="text" id="delete-id" placeholder="例如: T10001" autocomplete="off">
+            </div>
+            <div class="btn-group">
+                <button class="btn-primary" id="submitDeleteBtn">永久删除</button>
+            </div>
+            <div id="delete-result" class="result-card hidden"></div>
+        </div>
+    </div>
+    <footer>基于本地存储 · 数据可靠留存 | 时刻表助手</footer>
+</div>
+</body>
+</html>
